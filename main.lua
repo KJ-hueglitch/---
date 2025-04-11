@@ -31,6 +31,9 @@ local colorKiller = Color3.fromRGB(205, 54, 255)
 local isGenESP = true
 local GenESPTran = .5
 local colorGen = Color3.fromRGB(54, 255, 84)
+local isMicESP = true
+local MicESPTran = .5
+local colorMic = Color3.fromRGB(255, 54, 54)
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
@@ -217,6 +220,38 @@ local GeneratorColorPick = ESPTab:CreateColorPicker({
     end
 })
 
+local TextESPMice = ESPTab:CreateLabel("ESP Others", "hash")
+
+local ESPMiceToggle = ESPTab:CreateToggle({
+    Name = "Others ESP",
+    CurrentValue = true,
+    Flag = "MiceESP",
+    Callback = function(Value)
+        isGenESP = Value
+    end,
+})
+
+local ESPMiceTRA = ESPTab:CreateSlider({
+    Name = "Others Transparency",
+    Range = {0, 1},
+    Increment = 0.01,
+    Suffix = "",
+    CurrentValue = 0.5,
+    Flag = "ESPMiceTRA",
+    Callback = function(Value)
+        GenESPTran = Value
+    end,
+})
+
+local MiceColorPick = ESPTab:CreateColorPicker({
+    Name = "Others Color",
+    Color = Color3.fromRGB(255, 54, 54),
+    Flag = "MiceColorPick",
+    Callback = function(Value)
+        colorGen = Value
+    end
+})
+
 Rayfield:Notify({
    Title = "Loading Success",
    Content = "Have Fun",
@@ -297,7 +332,7 @@ RunService.RenderStepped:Connect(function(deltaTime)
                 local ESP = Instance.new("Highlight", Generator)
                 ESP.Name = "ESP"
                 ESP.FillTransparency = GenESPTran
-                ESP.OutlineTransparency = 1
+                ESP.OutlineTransparency = 0
                 ESP.FillColor = colorGen
                 ESP.OutlineColor = colorGen
             end
@@ -329,6 +364,27 @@ RunService.RenderStepped:Connect(function(deltaTime)
                     local tween1 = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {FillTransparency = 1})
                     tween:Play()
                     tween1:Play()
+                end
+            end
+        end
+    end
+
+    if isESP == true then
+        for _, Mic in Ingame:GetChildren() do
+            if Mic.Name ~= "Map" and Mic:IsA("Model") then
+                if not Mic:FindFirstChild("ESP") then
+                    local ESP = Instance.new("Highlight", Mic)
+                    ESP.Name = "ESP"
+                    ESP.FillTransparency = MicESPTran
+                    ESP.OutlineTransparency = 0
+                    ESP.FillColor = colorMic
+                    ESP.OutlineColor = colorMic
+                else
+                    local ESP = Mic:WaitForChild("ESP")
+                    ESP.FillTransparency = MicESPTran
+                    ESP.OutlineTransparency = 0
+                    ESP.FillColor = colorMic
+                    ESP.OutlineColor = colorMic
                 end
             end
         end
