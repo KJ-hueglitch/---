@@ -4,6 +4,10 @@ local RunService = game:GetService("RunService")
 local Player = game.Players.LocalPlayer
 local Character = Player.Character or Player.CharacterAdded:Wait()
 
+local map = workspace:WaitForChild("Map")
+local Ingame = map:WaitForChild("Ingame")
+local Map = Ingame:WaitForChild("Map")
+
 local ScreenGui = Instance.new("ScreenGui", Player.PlayerGui)
 ScreenGui.ResetOnSpawn = false
 ScreenGui.IgnoreGuiInset = true
@@ -288,22 +292,22 @@ RunService.RenderStepped:Connect(function(deltaTime)
         end
 	end
 
-    local map = workspace:WaitForChild("Map")
-    local Ingame = map:WaitForChild("Ingame")
-    local Map = Ingame:WaitForChild("Map")
-    for _, Generator in Map:GetChildren() do
+    for _, Generator in ipairs(Map:GetChildren()) do
         if Generator.Name == "Generator" then
+            if not Generator:FindFirstChild("ESP") then
+                local ESP = Instance.new("Highlight", Generator)
+                ESP.Name = "ESP"
+                ESP.FillTransparency = GenESPTran
+                ESP.OutlineTransparency = 1
+                ESP.FillColor = colorGen
+                ESP.OutlineColor = colorGen
+            end
+            Generator.ESP.FillColor = colorGen
+            Generator.ESP.OutlineColor = colorGen
             local Progress = Generator:FindFirstChild("Progress")
-            if isESP then
-                if not Generator:FindFirstChild("ESP") then
-                    local ESP = Instance.new("Highlight", Generator)
-                    ESP.Name = "ESP"
-                    ESP.FillTransparency = GenESPTran
-                    ESP.OutlineTransparency = 1
-                    ESP.FillColor = colorGen
-                    ESP.OutlineColor = colorGen
-                elseif Generator:FindFirstChild("ESP") then
-                    if Progress then
+            if Progress then
+                if isESP == true then
+                    if isGenESP then
                         if Progress.Value == 100 then
                             local tween = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {OutlineTransparency = 1})
                             local tween1 = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {FillTransparency = 1})
@@ -315,14 +319,23 @@ RunService.RenderStepped:Connect(function(deltaTime)
                             tween:Play()
                             tween1:Play()
                         end
+                    else
+                        local tween = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {OutlineTransparency = 1})
+                        local tween1 = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {FillTransparency = 1})
+                        tween:Play()
+                        tween1:Play()
                     end
+                else
+                    local tween = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {OutlineTransparency = 1})
+                    local tween1 = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {FillTransparency = 1})
+                    tween:Play()
+                    tween1:Play()
                 end
-            else
-                local tween = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {OutlineTransparency = 1})
-                local tween1 = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {FillTransparency = 1})
-                tween:Play()
-                tween1:Play()
             end
         end
+    end
+
+    if Character.Parent.Name == "Killers" then
+        
     end
 end)
