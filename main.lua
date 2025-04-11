@@ -227,7 +227,6 @@ Rayfield:Notify({
 RunService.RenderStepped:Connect(function(deltaTime)
     local map = workspace:WaitForChild("Map")
     local Ingame = map:WaitForChild("Ingame")
-    local Map = Ingame:FindFirstChild("Map")
 
     if Character.Parent == "Killers" then
         Main.Visible = true
@@ -292,7 +291,7 @@ RunService.RenderStepped:Connect(function(deltaTime)
         end
 	end
 
-    for _, Generator in Map:GetChildren() do
+    for _, Generator in ipairs(Ingame:WaitForChild("Map"):GetChildren()) do
         if Generator.Name == "Generator" then
             if not Generator:FindFirstChild("ESP") then
                 local ESP = Instance.new("Highlight", Generator)
