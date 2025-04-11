@@ -4,10 +4,6 @@ local RunService = game:GetService("RunService")
 local Player = game.Players.LocalPlayer
 local Character = Player.Character or Player.CharacterAdded:Wait()
 
-local map = workspace:WaitForChild("Map")
-local Ingame = map:WaitForChild("Ingame")
-local Map = Ingame:WaitForChild("Map")
-
 local ScreenGui = Instance.new("ScreenGui", Player.PlayerGui)
 ScreenGui.ResetOnSpawn = false
 ScreenGui.IgnoreGuiInset = true
@@ -229,6 +225,10 @@ Rayfield:Notify({
 })
 
 RunService.RenderStepped:Connect(function(deltaTime)
+    local map = workspace:WaitForChild("Map")
+    local Ingame = map:WaitForChild("Ingame")
+    local Map = Ingame:FindFirstChild("Map")
+
     if Character.Parent == "Killers" then
         Main.Visible = true
         Screen.Visible = true
@@ -292,7 +292,7 @@ RunService.RenderStepped:Connect(function(deltaTime)
         end
 	end
 
-    for _, Generator in ipairs(Map:GetChildren()) do
+    for _, Generator in Map:GetChildren() do
         if Generator.Name == "Generator" then
             if not Generator:FindFirstChild("ESP") then
                 local ESP = Instance.new("Highlight", Generator)
@@ -336,6 +336,7 @@ RunService.RenderStepped:Connect(function(deltaTime)
     end
 
     if Character.Parent.Name == "Killers" then
-        
+        Main.Visible = true
+        Screen.Visible = true
     end
 end)
