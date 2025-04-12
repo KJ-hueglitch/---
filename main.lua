@@ -331,47 +331,50 @@ RunService.RenderStepped:Connect(function(deltaTime)
     if InfStaminaMode then
 
         if Character.Parent.Name == "Survivors" then
+            local SpeedMultipliers = Character:FindFirstChild("SpeedMultipliers")
 
-            if not run then
-                animator = Humanoid:FindFirstChildOfClass("Animator")
-                if animator then
-                    run = animator:LoadAnimation(animationRun)
-                    run.Priority = Enum.AnimationPriority.Action
-                end
-            end
-
-            if not runLow then
-                animator = Humanoid:FindFirstChildOfClass("Animator")
-                if animator then
-                    runLow = animator:LoadAnimation(animationRunLow)
-                    runLow.Priority = Enum.AnimationPriority.Action
-                end
-            end
-
-            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
-                local tweenCam = TweenService:Create(Character.FOVMultipliers.Sprinting, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {Value = 1.125})
-                tweenCam:Play()
-                if Humanoid.MoveDirection.Magnitude > 0 then
-                    local tween = TweenService:Create(Character.SpeedMultipliers.Sprinting, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {Value = 2.167})
-                    tween:Play()
-
-                    if Humanoid.Health > 55 then
-                        if run and not run.IsPlaying then
-                            run:Play(.35)
-                        end
-                    else
-                        if runLow and not runLow.IsPlaying then
-                            runLow:Play(.35)
-                        end
+            if SpeedMultipliers then
+                if not run then
+                    animator = Humanoid:FindFirstChildOfClass("Animator")
+                    if animator then
+                        run = animator:LoadAnimation(animationRun)
+                        run.Priority = Enum.AnimationPriority.Action
                     end
                 end
-            elseif not UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
-                Character.SpeedMultipliers.Sprinting.Value = 1
-                local tweenCam = TweenService:Create(Character.FOVMultipliers.Sprinting, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {Value = 1})
-                tweenCam:Play()
-                if run or runLow then
-                    run:Stop(.35)
-                    runLow:Stop(.35)
+    
+                if not runLow then
+                    animator = Humanoid:FindFirstChildOfClass("Animator")
+                    if animator then
+                        runLow = animator:LoadAnimation(animationRunLow)
+                        runLow.Priority = Enum.AnimationPriority.Action
+                    end
+                end
+    
+                if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                    local tweenCam = TweenService:Create(Character.FOVMultipliers.Sprinting, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {Value = 1.125})
+                    tweenCam:Play()
+                    if Humanoid.MoveDirection.Magnitude > 0 then
+                        local tween = TweenService:Create(SpeedMultipliers.Sprinting, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {Value = 2.167})
+                        tween:Play()
+    
+                        if Humanoid.Health > 55 then
+                            if run and not run.IsPlaying then
+                                run:Play(.35)
+                            end
+                        else
+                            if runLow and not runLow.IsPlaying then
+                                runLow:Play(.35)
+                            end
+                        end
+                    end
+                elseif not UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                    SpeedMultipliers.Sprinting.Value = 1
+                    local tweenCam = TweenService:Create(Character.FOVMultipliers.Sprinting, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {Value = 1})
+                    tweenCam:Play()
+                    if run or runLow then
+                        run:Stop(.35)
+                        runLow:Stop(.35)
+                    end
                 end
             end
         end
@@ -380,7 +383,6 @@ RunService.RenderStepped:Connect(function(deltaTime)
 
     for _, plr in game.Players:GetChildren() do
         local char = plr.Character
-
 		if char ~= Character then
             if not char:FindFirstChild("ESP") then
                 local ESP = Instance.new("Highlight", char)
