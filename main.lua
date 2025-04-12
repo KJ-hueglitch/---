@@ -383,55 +383,59 @@ RunService.RenderStepped:Connect(function(deltaTime)
 
     for _, plr in game.Players:GetChildren() do
         local char = plr.Character
-		if char ~= Character then
-            if not char:FindFirstChild("ESP") then
-                local ESP = Instance.new("Highlight", char)
-                ESP.Name = "ESP"
-                ESP.FillTransparency = 1
-                ESP.OutlineTransparency = 1
-            end
-
-            if char.Parent.Name == "Survivors" then
-                char.ESP.OutlineColor = colorSurvival
-                char.ESP.FillColor = colorSurvival
-            elseif char.Parent.Name == "Killers" then
-                char.ESP.OutlineColor = colorKiller
-                char.ESP.FillColor = colorKiller
-            end
-        
-            if isESP == true then
-                if char.Parent.Name == "Survivors" then
-                    if isSurESP == true then
-                        local tween = TweenService:Create(char.ESP, TweenInfo.new(.3), {FillTransparency = SurESPTran})
-                        local tween1 = TweenService:Create(char.ESP, TweenInfo.new(.3), {OutlineTransparency = 0})
-                        tween1:Play()
-                        tween:Play()
-                        tween.Completed:Connect(function()
-                            char.ESP.FillTransparency = SurESPTran
-                        end)
-                    else
-                        local tween = TweenService:Create(char.ESP, TweenInfo.new(.3), {FillTransparency = 1})
-                        tween:Play()
+		if char ~= nil then
+            if char.Parent ~= nil then
+                if char ~= Character then
+                    if not char:FindFirstChild("ESP") then
+                        local ESP = Instance.new("Highlight", char)
+                        ESP.Name = "ESP"
+                        ESP.FillTransparency = 1
+                        ESP.OutlineTransparency = 1
                     end
-                elseif char.Parent.Name == "Killers" then
-                    if isKilESP == true then
-                        local tween = TweenService:Create(char.ESP, TweenInfo.new(.3), {FillTransparency = KilESPTran})
-                        local tween1 = TweenService:Create(char.ESP, TweenInfo.new(.3), {OutlineTransparency = 0})
+        
+                    if char.Parent.Name == "Survivors" then
+                        char.ESP.OutlineColor = colorSurvival
+                        char.ESP.FillColor = colorSurvival
+                    elseif char.Parent.Name == "Killers" then
+                        char.ESP.OutlineColor = colorKiller
+                        char.ESP.FillColor = colorKiller
+                    end
+                
+                    if isESP == true then
+                        if char.Parent.Name == "Survivors" then
+                            if isSurESP == true then
+                                local tween = TweenService:Create(char.ESP, TweenInfo.new(.3), {FillTransparency = SurESPTran})
+                                local tween1 = TweenService:Create(char.ESP, TweenInfo.new(.3), {OutlineTransparency = 0})
+                                tween1:Play()
+                                tween:Play()
+                                tween.Completed:Connect(function()
+                                    char.ESP.FillTransparency = SurESPTran
+                                end)
+                            else
+                                local tween = TweenService:Create(char.ESP, TweenInfo.new(.3), {FillTransparency = 1})
+                                tween:Play()
+                            end
+                        elseif char.Parent.Name == "Killers" then
+                            if isKilESP == true then
+                                local tween = TweenService:Create(char.ESP, TweenInfo.new(.3), {FillTransparency = KilESPTran})
+                                local tween1 = TweenService:Create(char.ESP, TweenInfo.new(.3), {OutlineTransparency = 0})
+                                tween1:Play()
+                                tween:Play()
+                                tween.Completed:Connect(function()
+                                    char.ESP.FillTransparency = KilESPTran
+                                end)
+                            else
+                                local tween = TweenService:Create(char.ESP, TweenInfo.new(.3), {FillTransparency = 1})
+                                tween:Play()
+                            end
+                        end
+                    elseif isESP == false then
+                        local tween = TweenService:Create(char.ESP, TweenInfo.new(.3), {OutlineTransparency = 1})
+                        local tween1 = TweenService:Create(char.ESP, TweenInfo.new(.3), {FillTransparency = 1})
+                        tween:Play()
                         tween1:Play()
-                        tween:Play()
-                        tween.Completed:Connect(function()
-                            char.ESP.FillTransparency = KilESPTran
-                        end)
-                    else
-                        local tween = TweenService:Create(char.ESP, TweenInfo.new(.3), {FillTransparency = 1})
-                        tween:Play()
                     end
                 end
-            elseif isESP == false then
-                local tween = TweenService:Create(char.ESP, TweenInfo.new(.3), {OutlineTransparency = 1})
-                local tween1 = TweenService:Create(char.ESP, TweenInfo.new(.3), {FillTransparency = 1})
-                tween:Play()
-                tween1:Play()
             end
         end
 	end
