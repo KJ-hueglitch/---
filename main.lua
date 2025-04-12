@@ -349,9 +349,10 @@ RunService.RenderStepped:Connect(function(deltaTime)
             end
 
             if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
-                local tween = TweenService:Create(Character.SpeedMultipliers.Sprinting, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {Value = 2.167})
-                tween:Play()
-                if Humanoid.MoveDirection.Magnitude > 1 then
+                if Humanoid.MoveDirection.Magnitude > 0 then
+                    local tween = TweenService:Create(Character.SpeedMultipliers.Sprinting, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {Value = 2.167})
+                    tween:Play()
+
                     if Humanoid.Health > 55 then
                         if run and not run.IsPlaying then
                             run:Play(.35)
