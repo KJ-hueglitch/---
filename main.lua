@@ -14,6 +14,8 @@ animationRunLow.AnimationId = "rbxassetid://115946474977409"
 local run = nil
 local runLow = nil
 
+local lockingTable = {}
+
 local camera = game.Workspace.CurrentCamera
 
 local IsPlaying = false
@@ -302,6 +304,7 @@ local InfStaminaToggle = CharacterTab:CreateToggle({
         InfStaminaMode = Value
     end,
 })
+CharacterTab:CreateLabel("Infstamina is still have bug. Rejoin to fix.", "bug")
 
 Rayfield:Notify({
    Title = "Loading Success",
@@ -402,7 +405,7 @@ RunService.RenderStepped:Connect(function(deltaTime)
                     end
                 
                     if isESP == true then
-                        if char.Parent.Name == "Survivors" then
+                        if char.Parent.Name == "Survivors" and Character.Parent.Name ~= "Killers" then
                             if isSurESP == true then
                                 local tween = TweenService:Create(char.ESP, TweenInfo.new(.3), {FillTransparency = SurESPTran})
                                 local tween1 = TweenService:Create(char.ESP, TweenInfo.new(.3), {OutlineTransparency = 0})
@@ -508,14 +511,53 @@ RunService.RenderStepped:Connect(function(deltaTime)
     end
 
     if KillerMode then
-        if Character.Parent then
+        if Character.Parent ~= nil then
             if Character.Parent.Name == "Killers" then
                 ScreenGui.Enabled = true
+
+                for _, char in workspace.Players.Survivors:GetChildren() do
+                    if char ~= nil then
+                        local ESP = char:FindFirstChild("ESP")
+                        if ESP then
+                            ESP.DepthMode = Enum.HighlightDepthMode.Occluded
+                            ESP.FillTransparency = 0.6
+                            ESP.FillColor = Color3.fromRGB(170, 0, 255)
+                            ESP.OutlineColor = Color3.fromRGB(170, 0, 255)
+                
+                            Player.CameraMode = Enum.CameraMode.LockFirstPerson
+                
+                            local player = game.Players:GetPlayerFromCharacter(char)
+                            if player then
+                                
+                            end
+                        end
+                    end
+                end                
             else
                 ScreenGui.Enabled = false
+                Player.CameraMode = Enum.CameraMode.Classic
+                for _, char in workspace.Players.Survivors:GetChildren() do
+                    local ESP = char:FindFirstChild("ESP")
+                    if ESP then
+                        ESP.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                        ESP.FillTransparency = SurESPTran
+                        ESP.FillColor = colorSurvival
+                        ESP.OutlineColor = colorSurvival
+                    end
+                end
             end
         end
     else
         ScreenGui.Enabled = false
+        Player.CameraMode = Enum.CameraMode.Classic
+        for _, char in workspace.Players.Survivors:GetChildren() do
+            local ESP = char:FindFirstChild("ESP")
+            if ESP then
+                ESP.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                ESP.FillTransparency = SurESPTran
+                ESP.FillColor = colorSurvival
+                ESP.OutlineColor = colorSurvival
+            end
+        end
     end
 end)
