@@ -1,25 +1,53 @@
+local UserInputService = game:GetService("UserInputService")
+local PathfindingService = game:GetService("PathfindingService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 
 local Player = game.Players.LocalPlayer
 local Character = Player.Character or Player.CharacterAdded:Wait()
+local Humanoid = Player.Character:WaitForChild("Humanoid")
+
+local animationRun = Instance.new("Animation")
+animationRun.AnimationId = "rbxassetid://136252471123500"
+local animationRunLow = Instance.new("Animation")
+animationRunLow.AnimationId = "rbxassetid://115946474977409" 
+local run = nil
+local runLow = nil
+
+local camera = game.Workspace.CurrentCamera
+
+local IsPlaying = false
+local isMakeTrack = false
 
 local ScreenGui = Instance.new("ScreenGui", Player.PlayerGui)
+ScreenGui.Name = "KillersMode"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.IgnoreGuiInset = true
+ScreenGui.Enabled = false
 local BG = Instance.new("Frame", ScreenGui)
 BG.Size = UDim2.new(1, 0, 1, 0)
-BG.BackgroundTransparency = 0.5
+BG.BackgroundTransparency = 0.8
+BG.BackgroundColor3 = Color3.fromRGB(238, 0, 255)
 BG.Name = "BG"
-BG.Visible = false
 local Main = Instance.new("Frame", ScreenGui)
-Main.Name = "Main"
+Main.Name = "IMAGE"
 Main.Size = UDim2.new(1, 0, 1, 0)
-Main.Visible = false
+Main.BackgroundTransparency = 1
 local Screen = Instance.new("ImageLabel", Main)
 Screen.Position = UDim2.new(0, 0, -0.045, 0)
 Screen.Size = UDim2.new(1, 0, 1, 0)
 Screen.Image = "http://www.roblox.com/asset/?id=125826138405844"
+Screen.BackgroundTransparency = 1
+
+local guiElement = Main
+local originalPosition = guiElement.Position
+
+local swayAmount = 500
+local smoothness = 0.1
+
+local lastCameraCFrame = camera.CFrame
+local swayX = 0
+local swayY = 0
 
 local isESP = false
 local isSurESP = true
@@ -34,6 +62,8 @@ local colorGen = Color3.fromRGB(54, 255, 84)
 local isMicESP = true
 local MicESPTran = .5
 local colorMic = Color3.fromRGB(255, 54, 54)
+local KillerMode = false
+local InfStaminaMode = false
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
@@ -113,7 +143,9 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local ESPTab = Window:CreateTab("ESP", "scan-eye") -- Title, Image
+local ESPTab = Window:CreateTab("ESP", "scan-eye")
+local KillerTab = Window:CreateTab("Killer Mode", "sword")
+local CharacterTab = Window:CreateTab("Character", "person-standing")
 
 local ESPToggle = ESPTab:CreateToggle({
    Name = "ESP",
@@ -227,7 +259,7 @@ local ESPMiceToggle = ESPTab:CreateToggle({
     CurrentValue = true,
     Flag = "MiceESP",
     Callback = function(Value)
-        isGenESP = Value
+        isMicESP = Value
     end,
 })
 
@@ -239,7 +271,7 @@ local ESPMiceTRA = ESPTab:CreateSlider({
     CurrentValue = 0.5,
     Flag = "ESPMiceTRA",
     Callback = function(Value)
-        GenESPTran = Value
+        MicESPTran = Value
     end,
 })
 
@@ -248,8 +280,27 @@ local MiceColorPick = ESPTab:CreateColorPicker({
     Color = Color3.fromRGB(255, 54, 54),
     Flag = "MiceColorPick",
     Callback = function(Value)
-        colorGen = Value
+        colorMic = Value
     end
+})
+--killer tab
+local KillerModeToggle = KillerTab:CreateToggle({
+    Name = "Killer Mode",
+    CurrentValue = false,
+    Flag = "KillerMode",
+    Callback = function(Value)
+        KillerMode = Value
+    end,
+})
+
+--Charcater tab
+local InfStaminaToggle = CharacterTab:CreateToggle({
+    Name = "Inf Stamina Mode",
+    CurrentValue = false,
+    Flag = "InfStaminaToggle",
+    Callback = function(Value)
+        InfStaminaMode = Value
+    end,
 })
 
 Rayfield:Notify({
@@ -260,19 +311,71 @@ Rayfield:Notify({
 })
 
 RunService.RenderStepped:Connect(function(deltaTime)
+    Character = Player.Character
+    local Humanoid = Character:WaitForChild("Humanoid")
+    local animator = Humanoid:FindFirstChildOfClass("Animator")
     local map = workspace:WaitForChild("Map")
     local Ingame = map:WaitForChild("Ingame")
+    local currentCFrame = camera.CFrame
+	local delta = currentCFrame:ToObjectSpace(lastCameraCFrame)
+	lastCameraCFrame = currentCFrame
+	local _, yRot, xRot = delta:ToEulerAnglesYXZ()
+	local targetX = math.clamp(-math.deg(yRot) * 0.5, -swayAmount, swayAmount)
+	local targetY = math.clamp(-math.deg(xRot) * 0.5, -swayAmount, swayAmount)
 
-    if Character.Parent == "Killers" then
-        Main.Visible = true
-        Screen.Visible = true
-    else
-        Main.Visible = false
-        Screen.Visible = false
+	swayX = swayX + (targetX - swayX) * smoothness
+	swayY = swayY + (targetY - swayY) * smoothness
+
+	guiElement.Position = originalPosition + UDim2.new(0, swayX, 0, swayY)
+
+    if InfStaminaMode then
+
+        if Character.Parent.Name == "Survivors" then
+
+            if not run then
+                animator = Humanoid:FindFirstChildOfClass("Animator")
+                if animator then
+                    run = animator:LoadAnimation(animationRun)
+                    run.Priority = Enum.AnimationPriority.Action
+                end
+            end
+
+            if not runLow then
+                animator = Humanoid:FindFirstChildOfClass("Animator")
+                if animator then
+                    runLow = animator:LoadAnimation(animationRunLow)
+                    runLow.Priority = Enum.AnimationPriority.Action
+                end
+            end
+
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                local tween = TweenService:Create(Character.SpeedMultipliers.Sprinting, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {Value = 2.167})
+                tween:Play()
+                if Humanoid.MoveDirection.Magnitude > 1 then
+                    if Humanoid.Health > 55 then
+                        if run and not run.IsPlaying then
+                            run:Play(.35)
+                        end
+                    else
+                        if runLow and not runLow.IsPlaying then
+                            runLow:Play(.35)
+                        end
+                    end
+                end
+            elseif not UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                if run or runLow then
+                    Character.SpeedMultipliers.Sprinting.Value = 1
+                    run:Stop(.35)
+                    runLow:Stop(.35)
+                end
+            end
+        end
+        
     end
 
     for _, plr in game.Players:GetChildren() do
         local char = plr.Character
+
 		if char ~= Character then
             if not char:FindFirstChild("ESP") then
                 local ESP = Instance.new("Highlight", char)
@@ -326,30 +429,38 @@ RunService.RenderStepped:Connect(function(deltaTime)
         end
 	end
 
-    for _, Generator in ipairs(Ingame:WaitForChild("Map"):GetChildren()) do
-        if Generator.Name == "Generator" then
-            if not Generator:FindFirstChild("ESP") then
-                local ESP = Instance.new("Highlight", Generator)
-                ESP.Name = "ESP"
-                ESP.FillTransparency = GenESPTran
-                ESP.OutlineTransparency = 0
-                ESP.FillColor = colorGen
-                ESP.OutlineColor = colorGen
-            end
-            Generator.ESP.FillColor = colorGen
-            Generator.ESP.OutlineColor = colorGen
-            local Progress = Generator:FindFirstChild("Progress")
-            if Progress then
-                if isESP == true then
-                    if isGenESP then
-                        if Progress.Value == 100 then
+    local Map = Ingame:FindFirstChild("Map")
+    if Map then
+        for _, Generator in ipairs(Map:GetChildren()) do
+            if Generator.Name == "Generator" then
+                if not Generator:FindFirstChild("ESP") then
+                    local ESP = Instance.new("Highlight", Generator)
+                    ESP.Name = "ESP"
+                    ESP.FillTransparency = 1
+                    ESP.OutlineTransparency = 1
+                    ESP.FillColor = colorGen
+                    ESP.OutlineColor = colorGen
+                end
+                Generator.ESP.FillColor = colorGen
+                Generator.ESP.OutlineColor = colorGen
+                local Progress = Generator:FindFirstChild("Progress")
+                if Progress then
+                    if isESP == true then
+                        if isGenESP then
+                            if Progress.Value == 100 then
+                                local tween = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {OutlineTransparency = 1})
+                                local tween1 = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {FillTransparency = 1})
+                                tween:Play()
+                                tween1:Play()
+                            else
+                                local tween = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {OutlineTransparency = 0})
+                                local tween1 = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {FillTransparency = GenESPTran})
+                                tween:Play()
+                                tween1:Play()
+                            end
+                        else
                             local tween = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {OutlineTransparency = 1})
                             local tween1 = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {FillTransparency = 1})
-                            tween:Play()
-                            tween1:Play()
-                        else
-                            local tween = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {OutlineTransparency = 0})
-                            local tween1 = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {FillTransparency = GenESPTran})
                             tween:Play()
                             tween1:Play()
                         end
@@ -359,11 +470,6 @@ RunService.RenderStepped:Connect(function(deltaTime)
                         tween:Play()
                         tween1:Play()
                     end
-                else
-                    local tween = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {OutlineTransparency = 1})
-                    local tween1 = TweenService:Create(Generator.ESP, TweenInfo.new(.3), {FillTransparency = 1})
-                    tween:Play()
-                    tween1:Play()
                 end
             end
         end
@@ -371,7 +477,7 @@ RunService.RenderStepped:Connect(function(deltaTime)
 
     if isESP == true then
         for _, Mic in Ingame:GetChildren() do
-            if Mic.Name ~= "Map" and Mic:IsA("Model") then
+            if Mic.Name ~= "Map" and Mic:IsA("Model") and Mic.Name ~= "Generator" then
                 if not Mic:FindFirstChild("ESP") then
                     local ESP = Instance.new("Highlight", Mic)
                     ESP.Name = "ESP"
@@ -390,8 +496,15 @@ RunService.RenderStepped:Connect(function(deltaTime)
         end
     end
 
-    if Character.Parent.Name == "Killers" then
-        Main.Visible = true
-        Screen.Visible = true
+    if KillerMode then
+        if Character.Parent then
+            if Character.Parent.Name == "Killers" then
+                ScreenGui.Enabled = true
+            else
+                ScreenGui.Enabled = false
+            end
+        end
+    else
+        ScreenGui.Enabled = false
     end
 end)
