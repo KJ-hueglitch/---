@@ -349,6 +349,8 @@ RunService.RenderStepped:Connect(function(deltaTime)
             end
 
             if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                local tweenCam = TweenService:Create(Character.FOVMultipliers.Sprinting, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {Value = 1.125})
+                tweenCam:Play()
                 if Humanoid.MoveDirection.Magnitude > 0 then
                     local tween = TweenService:Create(Character.SpeedMultipliers.Sprinting, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {Value = 2.167})
                     tween:Play()
@@ -364,8 +366,10 @@ RunService.RenderStepped:Connect(function(deltaTime)
                     end
                 end
             elseif not UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                Character.SpeedMultipliers.Sprinting.Value = 1
+                local tweenCam = TweenService:Create(Character.FOVMultipliers.Sprinting, TweenInfo.new(0.75, Enum.EasingStyle.Linear), {Value = 1})
+                tweenCam:Play()
                 if run or runLow then
-                    Character.SpeedMultipliers.Sprinting.Value = 1
                     run:Stop(.35)
                     runLow:Stop(.35)
                 end
