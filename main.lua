@@ -54,16 +54,16 @@ local swayY = 0
 local isESP = false
 local isSurESP = true
 local SurESPTran = .5
-local colorSurvival = Color3.fromRGB(255, 248, 54)
+local colorSurvival = Color3.fromRGB(65, 255, 106)
 local isKilESP = true
 local KilESPTran = .5
-local colorKiller = Color3.fromRGB(205, 54, 255)
+local colorKiller = Color3.fromRGB(255, 61, 61)
 local isGenESP = true
 local GenESPTran = .5
-local colorGen = Color3.fromRGB(54, 255, 84)
+local colorGen = Color3.fromRGB(238, 255, 54)
 local isMicESP = true
 local MicESPTran = .5
-local colorMic = Color3.fromRGB(255, 54, 54)
+local colorMic = Color3.fromRGB(255, 255, 255)
 local KillerMode = false
 local InfStaminaMode = false
 
@@ -146,7 +146,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 local ESPTab = Window:CreateTab("ESP", "scan-eye")
-local KillerTab = Window:CreateTab("Killer Mode", "sword")
+--local KillerTab = Window:CreateTab("Killer Mode", "sword")
 local CharacterTab = Window:CreateTab("Character", "person-standing")
 
 local ESPToggle = ESPTab:CreateToggle({
@@ -183,7 +183,7 @@ local ESPSURTRA = ESPTab:CreateSlider({
 
 local SurvivalColorPick = ESPTab:CreateColorPicker({
     Name = "Survival Color",
-    Color = Color3.fromRGB(255, 248, 54),
+    Color = Color3.fromRGB(65, 255, 106),
     Flag = "SurvivalColorPick",
     Callback = function(Value)
         colorSurvival = Value
@@ -215,7 +215,7 @@ local ESPKILTRA = ESPTab:CreateSlider({
 
 local KillerColorPick = ESPTab:CreateColorPicker({
     Name = "Killer Color",
-    Color = Color3.fromRGB(205, 54, 255),
+    Color = Color3.fromRGB(255, 61, 61),
     Flag = "KillerColorPick",
     Callback = function(Value)
         colorKiller = Value
@@ -247,7 +247,7 @@ local ESPGENTRA = ESPTab:CreateSlider({
 
 local GeneratorColorPick = ESPTab:CreateColorPicker({
     Name = "Generator Color",
-    Color = Color3.fromRGB(54, 255, 84),
+    Color = Color3.fromRGB(238, 255, 54),
     Flag = "GeneratorColorPick",
     Callback = function(Value)
         colorGen = Value
@@ -279,21 +279,21 @@ local ESPMiceTRA = ESPTab:CreateSlider({
 
 local MiceColorPick = ESPTab:CreateColorPicker({
     Name = "Others Color",
-    Color = Color3.fromRGB(255, 54, 54),
+    Color = Color3.fromRGB(255, 255, 255),
     Flag = "MiceColorPick",
     Callback = function(Value)
         colorMic = Value
     end
 })
 --killer tab
-local KillerModeToggle = KillerTab:CreateToggle({
+--[[local KillerModeToggle = KillerTab:CreateToggle({
     Name = "Killer Mode",
     CurrentValue = false,
     Flag = "KillerMode",
     Callback = function(Value)
         KillerMode = Value
     end,
-})
+})]]
 
 --Charcater tab
 local InfStaminaToggle = CharacterTab:CreateToggle({
