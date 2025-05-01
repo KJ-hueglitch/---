@@ -1,0 +1,147 @@
+local RunSerivce = game:GetService("RunService")
+
+local Map = workspace:WaitForChild("Map")
+local BredMakurz = Map:WaitForChild("BredMakurz")
+local Shopz = Map:WaitForChild("Shopz")
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local isDealerESP = false
+local colorDealerESP = Color3.fromRGB(255, 255, 255)
+local isSafeESP = false
+local colorSafeESP = Color3.fromRGB(65, 255, 48)
+
+local Window = Rayfield:CreateWindow({
+   Name = "Zane Hub",
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "Welcome to Zane Hub",
+   LoadingSubtitle = "",
+   Theme = "Bloom", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+
+   KeySystem = false, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
+
+local ESPTab = Window:CreateTab("ESP", "eye")
+
+local DealerSection = ESPTab:CreateSection("Dealer Section")
+local DealerESP = ESPTab:CreateToggle({
+    Name = "Dealer ESP",
+    CurrentValue = false,
+    Flag = "DealerESP",
+    Callback = function(Value)
+        isDealerESP = Value
+    end,
+})
+
+local DealerColor = ESPTab:CreateColorPicker({
+    Name = "Dealer Color",
+    Color = Color3.fromRGB(255,255,255),
+    Flag = "DealerColor",
+    Callback = function(Value)
+        colorDealerESP = Value
+    end
+})
+
+local SafeSection = ESPTab:CreateSection("Safe Section")
+local SafeESP = ESPTab:CreateToggle({
+    Name = "Safe ESP",
+    CurrentValue = false,
+    Flag = "SafeESP",
+    Callback = function(Value)
+        isSafeESP = Value
+    end,
+})
+
+local SafeColor = ESPTab:CreateColorPicker({
+    Name = "Safe Color",
+    Color = Color3.fromRGB(65, 255, 48),
+    Flag = "SafeColor",
+    Callback = function(Value)
+        colorSafeESP = Value
+    end
+})
+
+RunSerivce.RenderStepped:Connect(function(deltaTime)
+    for _, Dealer in pairs(Shopz:GetChildren()) do
+        if Dealer.Name == "Dealer" then
+            if not Dealer:FindFirstChild("ESP") then
+                local ESP = Instance.new("Highlight", Dealer)
+                ESP.Name = "ESP"
+                ESP.OutlineTransparency = 1
+            end
+        end
+    end
+
+    for _, Safe in pairs(BredMakurz:GetChildren()) do
+        if not Safe:FindFirstChild("ESP") then
+            local ESP = Instance.new("Highlight", Safe)
+            ESP.Name = "ESP"
+            ESP.OutlineTransparency = 1
+        end
+    end
+
+    if isSafeESP then
+        for _, Safe in pairs(BredMakurz:GetChildren()) do
+            local Values = Safe:FindFirstChild("Values")
+            local Broken = Values:WaitForChild("Broken")
+
+            if Values and Broken then
+                if Broken.Value == false then
+                    local ESP = Safe:FindFirstChild("ESP")
+                    ESP.Enabled = true
+                    ESP.FillColor = colorSafeESP
+                elseif Broken.Value == true then
+                    local ESP = Safe:FindFirstChild("ESP")
+                    ESP.Enabled = false
+                    ESP.FillColor = colorSafeESP
+                end
+            end
+        end
+    elseif not isSafeESP then
+        for _, Safe in pairs(BredMakurz:GetChildren()) do
+            local ESP = Safe:FindFirstChild("ESP")
+            ESP.Enabled = false
+        end
+    end
+
+    if isDealerESP then
+        for _, Dealer in pairs(Shopz:GetChildren()) do
+            if Dealer.Name == "Dealer" then
+                local ESP = Dealer:FindFirstChild("ESP")
+                ESP.Enabled = true
+                ESP.FillColor = colorDealerESP
+            end
+        end
+    else
+        for _, Dealer in pairs(Shopz:GetChildren()) do
+            if Dealer.Name == "Dealer" then
+                local ESP = Dealer:FindFirstChild("ESP")
+                ESP.Enabled = false
+            end
+        end
+    end
+end)
