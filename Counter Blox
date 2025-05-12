@@ -1,0 +1,281 @@
+-- Services
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+-- Variables
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local Mouse = LocalPlayer:GetMouse()
+
+-- Aimbot Settings
+local AimbotSetting = {
+    isAimbot = false,
+    Aiming = false,
+    Team_Check = false,
+    Aim_Part = "Head",
+    FOV_Size = 200,
+    FOV_Color = Color3.fromRGB(255, 255, 255),
+    SmoothAim = true,
+    SmoothAmount = .2,
+}
+
+-- ESP Settings
+local ESPSetting = {
+    isESP = false,
+    ESP_Teams = true,
+    ESP_Emenys = true,
+}
+
+-- UI Library
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local ThemeSet = {
+   TextColor = Color3.fromRGB(240, 240, 240),
+   Background = Color3.fromRGB(13,11,9),
+   Topbar = Color3.fromRGB(13,11,9),
+   Shadow = Color3.fromRGB(13,11,9),
+   NotificationBackground = Color3.fromRGB(20, 20, 20),
+   NotificationActionsBackground = Color3.fromRGB(230, 230, 230),
+   TabBackground = Color3.fromRGB(80, 80, 80),
+   TabStroke = Color3.fromRGB(85, 85, 85),
+   TabBackgroundSelected = Color3.fromRGB(210, 210, 210),
+   TabTextColor = Color3.fromRGB(240, 240, 240),
+   SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
+   ElementBackground = Color3.fromRGB(35, 35, 35),
+   ElementBackgroundHover = Color3.fromRGB(40, 40, 40),
+   SecondaryElementBackground = Color3.fromRGB(25, 25, 25),
+   ElementStroke = Color3.fromRGB(50, 50, 50),
+   SecondaryElementStroke = Color3.fromRGB(40, 40, 40),
+   SliderBackground = Color3.fromRGB(25, 25, 25),
+   SliderProgress = Color3.fromRGB(168, 168, 168),
+   SliderStroke = Color3.fromRGB(168, 168, 168),
+   ToggleBackground = Color3.fromRGB(30, 30, 30),
+   ToggleEnabled = Color3.fromRGB(255, 255, 255),
+   ToggleDisabled = Color3.fromRGB(100, 100, 100),
+   ToggleEnabledStroke = Color3.fromRGB(255, 255, 255),
+   ToggleDisabledStroke = Color3.fromRGB(125, 125, 125),
+   ToggleEnabledOuterStroke = Color3.fromRGB(100, 100, 100),
+   ToggleDisabledOuterStroke = Color3.fromRGB(65, 65, 65),
+   DropdownSelected = Color3.fromRGB(40, 40, 40),
+   DropdownUnselected = Color3.fromRGB(30, 30, 30),
+   InputBackground = Color3.fromRGB(30, 30, 30),
+   InputStroke = Color3.fromRGB(65, 65, 65),
+   PlaceholderColor = Color3.fromRGB(178, 178, 178)
+}
+
+-- Window
+local Window = Rayfield:CreateWindow({
+  Name = "Zane Hub",
+  Icon = 0,
+  LoadingTitle = "Welcome to Zane Hub",
+  Theme = ThemeSet,
+  ConfigurationSaving = {
+     Enabled = true,
+     FolderName = nil,
+     FileName = "Big Hub"
+  },
+  KeySystem = false
+})
+
+-- Notify
+Rayfield:Notify({
+   Title = "Loading Success",
+   Content = "Welcome " .. LocalPlayer.DisplayName,
+   Duration = 6.5,
+   Image = 4483362458,
+})
+
+-- Tab + Controls
+local AimbotTab = Window:CreateTab("Aimbot", "crosshair")
+local ESPTab = Window:CreateTab("ESP", "scan-eye")
+
+AimbotTab:CreateSection("Enabled Aimbot")
+AimbotTab:CreateToggle({
+   Name = "Aimbot Toggle",
+   CurrentValue = false,
+   Flag = "AimbotToggle",
+   Callback = function(Value)
+        AimbotSetting.isAimbot = Value
+   end,
+})
+
+AimbotTab:CreateSection("Aimbot Settings")
+
+AimbotTab:CreateToggle({
+   Name = "Team Check",
+   CurrentValue = false,
+   Flag = "TeamCheckToggle",
+   Callback = function(Value)
+        AimbotSetting.Team_Check = Value
+   end,
+})
+
+AimbotTab:CreateDropdown({
+   Name = "Aim Part",
+   Options = {"Head", "HumanoidRootPart"},
+   CurrentOption = {"Head"},
+   MultipleOptions = false,
+   Flag = "AimPartDropdown",
+   Callback = function(Options)
+        AimbotSetting.Aim_Part = Options[1]
+   end,
+})
+
+AimbotTab:CreateSlider({
+   Name = "FOV Size",
+   Range = {1, 400},
+   Increment = 10,
+   Suffix = "px",
+   CurrentValue = 200,
+   Flag = "FOVSize",
+   Callback = function(Value)
+        AimbotSetting.FOV_Size = Value
+   end,
+})
+
+AimbotTab:CreateColorPicker({
+    Name = "FOV Color",
+    Color = Color3.fromRGB(255,255,255),
+    Flag = "FOVColor",
+    Callback = function(Value)
+        AimbotSetting.FOV_Color = Value
+    end
+})
+
+AimbotTab:CreateToggle({
+   Name = "Smooth Aiming",
+   CurrentValue = true,
+   Flag = "SmoothAiming",
+   Callback = function(Value)
+        AimbotSetting.SmoothAim = Value
+   end,
+})
+
+AimbotTab:CreateSlider({
+   Name = "Smooth",
+   Range = {0, 1},
+   Increment = .1,
+   Suffix = "sm",
+   CurrentValue = .2,
+   Flag = "SmoothValue",
+   Callback = function(Value)
+        AimbotSetting.SmoothAmount = Value
+   end,
+})
+
+--------------------------------------------------------------------------------------------------------
+
+ESPTab:CreateToggle({
+   Name = "ESP Toggle",
+   CurrentValue = false,
+   Flag = "ESPToggle",
+   Callback = function(Value)
+        ESPSetting.isESP = Value
+   end,
+})
+
+ESPTab:CreateToggle({
+   Name = "ESP Teams",
+   CurrentValue = true,
+   Flag = "ESPTeams",
+   Callback = function(Value)
+        ESPSetting.ESP_Teams = Value
+   end,
+})
+
+ESPTab:CreateToggle({
+   Name = "ESP Emenys",
+   CurrentValue = true,
+   Flag = "ESPEmenys",
+   Callback = function(Value)
+        ESPSetting.ESP_Emenys = Value
+   end,
+})
+
+-- Drawing FOV Circle
+local fovcircle = Drawing.new("Circle")
+fovcircle.Visible = false
+fovcircle.Thickness = 1
+fovcircle.Filled = false
+
+-- Input Handling
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+	if input.UserInputType == Enum.UserInputType.MouseButton2 then
+		AimbotSetting.Aiming = true
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+	if input.UserInputType == Enum.UserInputType.MouseButton2 then
+		AimbotSetting.Aiming = false
+	end
+end)
+
+RunService.RenderStepped:Connect(function()
+	fovcircle.Position = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+	fovcircle.Radius = AimbotSetting.FOV_Size
+	fovcircle.Color = AimbotSetting.FOV_Color
+	fovcircle.Visible = AimbotSetting.isAimbot
+
+	if not AimbotSetting.Aiming then return end
+
+	local closestCharacter = nil
+	local shortestDistance = AimbotSetting.FOV_Size
+
+    for _, char in pairs(workspace:GetChildren()) do
+        local plr = Players:GetPlayerFromCharacter(char)
+        if plr and plr ~= LocalPlayer then
+            local ESP = char:FindFirstChild("ESP")
+            if not ESP then
+                local newESP = Instance.new("Highlight", char)
+                newESP.Name = "ESP"
+                newESP.FillTransparency = .5
+                newESP.FillColor = plr.TeamColor.Color
+                newESP.OutlineColor = plr.TeamColor.Color
+            elseif ESP then
+                ESP.Enabled = ESPSetting.isESP
+                ESP.FillColor = plr.TeamColor.Color
+                ESP.OutlineColor = plr.TeamColor.Color
+            end
+        end
+    end
+
+	if AimbotSetting.isAimbot then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character:FindFirstChild(AimbotSetting.Aim_Part) then
+                if player.Character.Humanoid.Health > 0 then
+                    if not AimbotSetting.Team_Check or player.Team ~= LocalPlayer.Team then
+                        local part = player.Character[AimbotSetting.Aim_Part]
+                        local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
+
+                        if onScreen then
+                            local mousePos = Vector2.new(Mouse.X, Mouse.Y)
+                            local distance = (mousePos - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+
+                            if distance < shortestDistance then
+                                shortestDistance = distance
+                                closestCharacter = player.Character
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        if closestCharacter then
+            local aimPart = closestCharacter[AimbotSetting.Aim_Part]
+            local targetPos = aimPart.Position
+            local currentCFrame = Camera.CFrame
+            local lookVector = CFrame.new(currentCFrame.Position, targetPos)
+
+            if AimbotSetting.SmoothAim then
+                Camera.CFrame = currentCFrame:Lerp(lookVector, AimbotSetting.SmoothAmount)
+            else
+                Camera.CFrame = lookVector
+            end
+        end
+    end
+end)
