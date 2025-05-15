@@ -202,14 +202,14 @@ fovcircle.Filled = false
 -- Input Handling
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
-	if input.UserInputType == Enum.UserInputType.MouseButton2 then
+	if input.UserInputType == Enum.UserInputType.MouseButton3 then
 		AimbotSetting.Aiming = true
 	end
 end)
 
 UserInputService.InputEnded:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
-	if input.UserInputType == Enum.UserInputType.MouseButton2 then
+	if input.UserInputType == Enum.UserInputType.MouseButton3 then
 		AimbotSetting.Aiming = false
 	end
 end)
