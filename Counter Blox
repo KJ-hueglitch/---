@@ -14,6 +14,7 @@ local AimbotSetting = {
     Aiming = false,
     Team_Check = false,
     Aim_Part = "Head",
+    Key_Blind = "MouseButton2",
     FOV_Size = 200,
     FOV_Color = Color3.fromRGB(255, 255, 255),
     SmoothAim = true,
@@ -112,6 +113,17 @@ AimbotTab:CreateToggle({
 })
 
 AimbotTab:CreateDropdown({
+   Name = "Key Blind",
+   Options = {"MouseButton2", "MouseButton3"},
+   CurrentOption = {"MouseButton2"},
+   MultipleOptions = false,
+   Flag = "KeyBlind",
+   Callback = function(Options)
+        AimbotSetting.Key_Blind = Options
+   end,
+})
+
+AimbotTab:CreateDropdown({
    Name = "Aim Part",
    Options = {"Head", "HumanoidRootPart"},
    CurrentOption = {"Head"},
@@ -202,14 +214,14 @@ fovcircle.Filled = false
 -- Input Handling
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
-	if input.UserInputType == Enum.UserInputType.MouseButton3 then
+	if input.UserInputType == AimbotSetting.Key_Blind then
 		AimbotSetting.Aiming = true
 	end
 end)
 
 UserInputService.InputEnded:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
-	if input.UserInputType == Enum.UserInputType.MouseButton3 then
+	if input.UserInputType == AimbotSetting.Key_Blind then
 		AimbotSetting.Aiming = false
 	end
 end)
